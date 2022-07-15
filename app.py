@@ -94,8 +94,8 @@ print('-------- complete ------------------------------------------')
 # --------------------------------------------------------------------------------------------------
 
 print('---- adding trading strategy -------------------------------')
-cerebro.addstrategy(sma10v30cross)  # add the trading strategy
-# cerebro.addstrategy(sma20v200cross)  # add the trading strategy
+# cerebro.addstrategy(sma10v30cross)  # add the trading strategy
+cerebro.addstrategy(sma20v200cross)  # add the trading strategy
 print('-------- complete ------------------------------------------')
 
 
