@@ -81,6 +81,7 @@ cerebro.broker.setcommission(broker_commission)
 # get stock data
 stock_data = get_stock_data('MSFT')
 
+# convert the pandas dataframe to a feed digestible by cerebro
 datafeed = bt.feeds.PandasData(dataname=stock_data)
 
 print('---- adding stock data -------------------------------------')
