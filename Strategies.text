@@ -1,0 +1,16 @@
+Define Turtle Trading Strategy Function 
+Sell Rules
+    Setup is the weekly channel showing lowest weekly low of the preceeding four weeks
+    The filter is only trade signal if the previous signal was a loss
+    for the entry it's sell a break of the lowest weekly low of the preceeding four weeks
+    For stock - buy a break of the highest weekly high of the preceeding two weeks
+
+Buy Rules
+    The setup is weekly channel showing the highest weekly high of the preceeding four weeks
+    the filter is only trade signal if previous signal was a loss
+    for the entry buy a break of the highest weekly high of the preceeding four weeks
+    for stock - sell a break of the lowest weekly low of the preceeding two weeks
+
+
+
+
