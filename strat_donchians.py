@@ -1,9 +1,10 @@
-from datetime import datetime
 import pandas as pd
 import numpy as np
-from pathlib import Path
-# import hvplot.pandas
+import plotly.graph_objects as go
 
+from datetime import datetime
+from pathlib import Path
+from utils import *
 
 
 # ==================================================================================================
@@ -19,6 +20,11 @@ broker_value = 0
 
 
 # --------------------------------------------------------------------------------------------------
+def create_pandas_dataframe(columns):
+	
+	df = pd.DataFrame
+	return df
+
 ORDER_COLUMNS = ['Date','Type','Size','Status']
 orders = pd.DataFrame(
 	columns = ORDER_COLUMNS
@@ -47,6 +53,7 @@ print()
 
 
 # --------------------------------------------------------------------------------------------------
+
 spy_df = pd.read_csv(
 	Path('data/SPY.csv'),
 	# index_col='Date', 
@@ -131,7 +138,7 @@ print(spy_df.head())
 # key functions
 # ==================================================================================================
 
-def execute_order(execution_date,current_price,order_size,order_type):
+def execute_order(execution_date, current_price, order_size, order_type):
 	"""TODO: a summary fo what this function does
 	
 	TODO: add a detailed description if necessary
@@ -244,10 +251,6 @@ def execute_order(execution_date,current_price,order_size,order_type):
 		columns=['Date','Position','Price','Cost','Type','Status','Unrealized','Realized']
 		"""
 		
-		#------------------------------------------------------------
-		# STUCK HERE 
-		#------------------------------------------------------------
-		
 		# filter for all 'open' positions
 		print('filtering open positions')
 		open_positions = positions.loc[positions.Status=='open']
@@ -284,15 +287,14 @@ def execute_order(execution_date,current_price,order_size,order_type):
 		# 7 == Realized column
 		# 3 == Cost column
 		# the Realized value = price * size - cost
-		positions.iloc[idx,7] = current_price * order_size - positions.iloc[idx,3]
+		positions.iloc[idx,7] = current_price * order_size - positions.iloc[idx,3]		
 		
-		#------------------------------------------------------------
-		# STUCK HERE 
-		#------------------------------------------------------------
-		
-		# positions.Status[idx] = 'closed'
 		# 5 == Status column
 		positions.iloc[idx,5] = 'closed'
+		
+		# DELETE ME -- NOTE: using .Status[#] creates a copy of the dataframe, so if we assign a value there with "=" then we get a pandas warning printed to the screen
+		# positions.Status[idx] = 'closed'
+		# DELETE ME ^^^^
 	
 	# display(positions)
 	
@@ -326,9 +328,10 @@ def process_orders(df, df_idx):
 	
 	"""
 	
-	# get all open orders
+	# get a copy of all open orders
 	open_orders = orders.loc[orders.Status=='open']
 	
+	# if there's no open orders, then return as there's nothing more to do
 	if len(open_orders) < 1 :
 		# print(f'no orders to process')
 		return None
@@ -337,6 +340,7 @@ def process_orders(df, df_idx):
 	# display some details about this order execution
 	print(f'processing orders; df_idx: {df_idx}; date: {spy_df.Date[df_idx]}; price: {spy_df.Open[df_idx]}; # orders: {len(open_orders)}')
 	# display(open_orders)
+	# REPLACE ME --
 	
 	for i in range(0, len(open_orders)) :
 		
@@ -347,13 +351,15 @@ def process_orders(df, df_idx):
 		# print the Type of order we're processing
 		print(f'order: {idx}; date: {spy_df.Date[df_idx]}; price: {spy_df.Open[df_idx]}; size: {orders.Size[idx]}; type: {orders.Type[idx]}')
 		
+		# DELETE ME -- we now operate directly on the dataframe instead of passing copies of the dataframe back and forth
 		# execute the current order
 		# positions = execute_order(spy_df,df_i,positions,orders.iloc[i,1],orders.iloc[i,0])
 		# positions = execute_order(spy_df.Date[df_idx], spy_df.Open[df_idx], orders.Size[i], orders.iloc[i,1])
+		# DELETE ME --
 		
 		execute_order(spy_df.Date[df_idx], spy_df.Open[df_idx], orders.Size[idx], orders.Type[idx])
 		
-		# set the current order's status to 'filled'
+		# after we execute the order we then set the current order's status to 'filled'
 		# 3 = Status column
 		orders.iloc[idx,3] = 'filled'
 		
@@ -411,6 +417,7 @@ def create_order(order_date, order_type, order_size=DEFAULT_ORDER_SIZE):
 	# DELETE ME -- concatenate the new order to the orders dataframe
 	# orders = pd.concat([orders, order])
 	
+	# add the new order as a row at the bottom of the orders dataframe
 	orders.loc[len(orders)] = data
 	
 	# REPLACE ME -- this comment and print() should be a log statement
@@ -431,6 +438,7 @@ def create_order(order_date, order_type, order_size=DEFAULT_ORDER_SIZE):
 2. check the trading strategy for 'buy' or 'sell' indicators
 """
 
+# iterate over the dataframe starting with the second row
 for i in range(1, len(spy_df)) :
 	
 	process_orders(spy_df, i)
@@ -539,5 +547,160 @@ for i in range(1, len(spy_df)) :
 
 
 
+
+# ==================================================================================================
+# save / store the strategy output
+# ==================================================================================================
+
+print(spy_df.head(50))
 print(orders)
 print(positions)
+
+
+"""
+	TODO: create the dataframes with the data we want to plot
+"""
+
+'''TODO: isolate the stock price, high/low indicator, and buy/sell signals'''
+stock_data_to_plot_df = spy_df[['Date','Close','RollingHigh','RollingLow','BuySignal','SellSignal','Volume']]
+print('----- STOCK DATA TO PLOT -----')
+print(stock_data_to_plot_df.head())
+
+'''TODO: isolate the position data'''
+'''
+	get the date, price, and realized value
+'''
+
+'''TODO: generate a dataframe tracking the brokerage account value over time'''
+'''
+	get the date
+	save cash on hand
+	save brokerage total value == cash on hand + position.unrealized + position.realized
+	calculate return
+	----
+	stretch goals
+	----
+	can we calculate risk?
+	can we calculate expectancy?
+	can we calculate anything else?
+'''
+
+'''TODO: '''
+'''TODO: '''
+
+
+# ---- save / store ----
+
+
+
+
+# ==================================================================================================
+# plot the results of the strategy
+# ==================================================================================================
+
+fig = go.Figure()
+
+fig.add_trace(go.Scatter(
+	x=spy_df.Date, 
+	y=spy_df.Close, 
+	name="SPY",
+    hoverinfo='text+name',
+	line_shape='linear',
+	line=dict(color="#000000"),
+))
+
+fig.add_trace(go.Scatter(
+	x=spy_df.Date, 
+	y=spy_df.RollingHigh, 
+	name="4 Week High",
+#    text=["tweak line smoothness<br>with 'smoothing' in line object"],
+    hoverinfo='text+name',
+    line_shape='linear',
+#	hovertemplate='Price: $%{y:.2f}'+'<br>Date: %{x}<extra></extra>'
+))
+
+"""
+	add <extra></extra> to the end of the hovertemplate to remove the name of the line / plotted thing
+"""
+
+fig.add_trace(go.Scatter(
+	x=spy_df.Date,
+	y=spy_df.RollingLow,
+	name="4 Week Low",
+	hoverinfo='text+name',
+	line_shape='linear',
+#	hovertemplate='Price: $%{y:.2f}'+'<br>Date: %{x}<extra></extra>',
+#	mode='markers',
+#	marker_symbol='triangle-down',
+#	marker_size=15,
+#	marker_color="red",
+))
+
+fig.add_trace(go.Scatter(
+	x=spy_df.Date,
+	y=spy_df.BuySignal,
+	name="Buy",
+	hoverinfo='text+name',
+#	line_shape='linear',
+#	hovertemplate='Price: $%{y:.2f}'+'<br>Date: %{x}<extra></extra>',
+	mode='markers',
+	marker_symbol='triangle-up',
+	marker_size=12,
+	marker_color="green",
+))
+
+fig.add_trace(go.Scatter(
+	x=spy_df.Date,
+	y=spy_df.SellSignal,
+	name="Sell",
+	hoverinfo='text+name',
+#	line_shape='linear',
+#	hovertemplate='Price: $%{y:.2f}'+'<br>Date: %{x}<extra></extra>',
+	mode='markers',
+	marker_symbol='triangle-down',
+	marker_size=12,
+	marker_color="red",
+))
+
+# fig = go.Figure(go.Scatter(
+# 	mode="markers", 
+# 	x=namevariants, 
+# 	y=namestems, 
+# 	marker_symbol=symbols,                       
+# 	marker_line_color="midnightblue", 
+# 	marker_color="lightskyblue",
+#     marker_line_width=2,
+# 	marker_size=15,
+# #    hovertemplate="name: %{y}%{x}<br>number: %{marker.symbol}<extra></extra>"
+# ))
+
+# fig = px.scatter(df, x="sepal_width", y="sepal_length", color="species")
+
+# fig.update_traces(marker=dict(size=12,
+#                               line=dict(width=2,
+#                                         color='DarkSlateGrey')),
+#                   selector=dict(mode='markers'))
+
+# fig.add_trace(go.Scatter(x=x, y=y + 10, name="vhv",
+#                     line_shape='vhv'))
+# fig.add_trace(go.Scatter(x=x, y=y + 15, name="hvh",
+#                     line_shape='hvh'))
+# fig.add_trace(go.Scatter(x=x, y=y + 20, name="vh",
+#                     line_shape='vh'))
+# fig.add_trace(go.Scatter(x=x, y=y + 25, name="hv",
+#                     line_shape='hv'))
+
+# fig.update_traces(
+# 	yaxis title,
+# 	xaxis title,
+# 	hoverinfo='text+name',
+# 	mode='lines+markers'
+# )
+
+# fig.update_layout(
+# 	legend=dict(
+# 		y=0.5, traceorder='reversed', font_size=16
+# 	)
+# )
+
+fig.show()
