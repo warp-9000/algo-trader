@@ -1,5 +1,9 @@
 """
 Welcome to Algo Trader!!
+Are you an existing user
+    Login Credentials
+New user 
+    Create an account
 
 Would you like to download fresh data or use an existing data?
 1 Download Fresh Data
@@ -15,14 +19,21 @@ Use existing data
 
 Loading data as per the selected ticker
 
+What is your investment risk tolerance?
+Low 
+Moderate 
+High
+
+#We have no idea about how much risk each of thses strategies carry
+
 What type of Algorithm Strategies you want to trade?
-    Donchian's Four Weel Rule
+    Donchian's Four Weel Rule 
     Dreyfus’s 52 Week Rule
     Turtle Trading
     Golden Cross” 20v200 SMA
 
 
-How many cash do you want to trade?
+How much cash do you want to trade?
 Default 100k
 
 How many shares do you want to trade?
@@ -48,6 +59,7 @@ No
 If yes
 Main Menu
 Choose different trading strategy
+
 
 
 
