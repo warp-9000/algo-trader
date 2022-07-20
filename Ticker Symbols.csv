@@ -1,20 +1,20 @@
-﻿Ticker,Name
-META,"Meta Platforms, Inc."
-GOOG,Alphabet Inc.
-AAPL,Apple Inc. 
-NFLX,"Netflix, Inc."
-AMZN,"Amazon.com, Inc. "
-VFH,Vanguard Financials Index Fund
-FNCL,Fidelity MSCI Financials Index ETF
-XSW,SPDR S&P Software & Services ETF 
-RYT,Invesco S&P 500 Equal Weight Technology ETF
-NURE,Nuveen Short-Term REIT ETF
-XLRE,The Real Estate Select Sector SPDR Fund 
-VIS,Vanguard Utilities Index Fund 
-FIDU,Industrial Select Sector SPDR Fund
-FMAT,Fidelity MSCI Materials Index ETF
-XLB,Materials Select Sector SPDR Fund 
-UNH,UnitedHealth Group Incorporated
-CVS,CVS Health Corporation
-GDX,VanEck Gold Miners ETF
-XLB,Materials Select Sector SPDR Fund 
+﻿Ticker,Name,Sector
+META,"Meta Platforms, Inc.",Technology
+GOOG,Alphabet Inc.,Technology
+AAPL,Apple Inc. ,Technology
+NFLX,"Netflix, Inc.",Technology
+AMZN,"Amazon.com, Inc. ",Technology
+VFH,Vanguard Financials Index Fund,Finance
+FNCL,Fidelity MSCI Financials Index ETF,Finance
+XSW,SPDR S&P Software & Services ETF ,Technology
+RYT,Invesco S&P 500 Equal Weight Technology ETF,Technology
+NURE,Nuveen Short-Term REIT ETF,Real Estate
+XLRE,The Real Estate Select Sector SPDR Fund ,Real Estate
+VIS,Vanguard Utilities Index Fund ,Utilities
+FIDU,Industrial Select Sector SPDR Fund,Utilities
+FMAT,Fidelity MSCI Materials Index ETF,Natural Resources
+XLB,Materials Select Sector SPDR Fund ,Natural Resources
+UNH,UnitedHealth Group Incorporated,Healthcare
+CVS,CVS Health Corporation,Healthcare
+GDX,VanEck Gold Miners ETF,Energy
+XLB,Materials Select Sector SPDR Fund ,Energy
