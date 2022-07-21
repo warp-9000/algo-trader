@@ -23,8 +23,21 @@ from plots import *
 
 
 
-stock_plot_df = load_data('plot_stock_data')
-trade_plot_df = load_data('plot_trade_data')
-broke_plot_df = load_data('plot_broke_data')
+
+
+
+# -------------------------------------------------------------------------------------------------
+# UNCOMMENT THIS TO PLOT A STRATEGY AGAINST PRIOR DATA
+# -------------------------------------------------------------------------------------------------
+
+ticker = 'SPY'
+
+# strategy = 'donchian'
+strategy = 'dreyfus'
+# strategy = 'goldencross'
+
+stock_plot_df = load_data(ticker+'_'+strategy+'_'+'plot_stock_data')
+trade_plot_df = load_data(ticker+'_'+strategy+'_'+'plot_trade_data')
+broke_plot_df = load_data(ticker+'_'+strategy+'_'+'plot_broke_data')
 
 generate_graph(stock_plot_df, trade_plot_df, broke_plot_df)
