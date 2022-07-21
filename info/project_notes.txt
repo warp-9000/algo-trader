@@ -49,29 +49,21 @@ yfinance
 
 
 
-List of Commands
+Commands for setting up our conda environment
 ------------------------------------------------------------
-conda create -n algo python=3.5         <-- required
-conda uninstall python
-conda install python=3.6
-conda activate algo                     
-pip install backtrader                  <-- required
-pip install --upgrade pip               <-- upgraded to latest pip supported by python 3.5
-pip install backtrader[plotting]        <-- this didn't work
-pip install matplotlib                  <-- this installs latest matplotlib
-pip unistall matplotlib                 <-- uninstalled due to error
-
------ commands required to run our code -----
 conda create -n algo python=3.7         <-- python 3.7 is required for our env
-pip install backtrader                  <-- required to backtest trading strategies
-pip install matplotlib==3.2.2           <-- required to plot results
-pip install requests                    <-- required to access APIs / make web requests
-pip install yfinance                    <-- required to download data from yahoo finance
-pip install alpaca-trade-api
+pip3 install --upgrade pip
+pip3 install requests                   <-- for accessing APIs / making web requests
+pip3 install yfinance                   <-- for downloading data from yahoo finance
+pip3 install alpaca-trade-api           <-- for downloading latest data from alpaca
+pip3 install pandas-datareader          <-- for downloading data from yahoo finance
+pip3 install plotly                     <-- for plotting graphs
 
-
+Commands we aren't using anymore
 ------------------------------------------------------------
-
+pip3 install backtrader                 <-- for backtesting trading strategies
+pip3 install matplotlib==3.2.2          <-- for plotting results
+pip install backtrader[plotting]        <-- this didn't work
 
 
 
@@ -130,7 +122,7 @@ yarl                      1.7.2                    pypi_0    pypi
 yfinance                  0.1.74                   pypi_0    pypi
 zlib                      1.2.12               h4dc903c_2
 
-
+------------------------------------------------------------
 Installed hvplot
 pip3 install hvplot
 
@@ -138,14 +130,14 @@ Installing collected packages: webencodings, zipp, tqdm, param, bleach, pyviz-co
 
 Successfully installed bleach-5.0.1 colorcet-3.0.0 holoviews-1.15.0 hvplot-0.8.0 importlib-metadata-4.12.0 markdown-3.4.1 panel-0.13.1 param-1.12.2 pyct-0.4.8 pyviz-comms-2.2.0 tqdm-4.64.0 webencodings-0.5.1 zipp-3.8.1
 
-
+------------------------------------------------------------
 Installed plotly
 pip3 install plotly
 
 Installing collected packages: tenacity, plotly
 Successfully installed plotly-5.9.0 tenacity-8.0.1
 
-
+------------------------------------------------------------
 Installed jupyterlab
 pip3 install jupyterlab
 
@@ -153,13 +145,20 @@ Installing collected packages: json5, sniffio, babel, anyio, jupyter-server, not
 
 Successfully installed anyio-3.6.1 babel-2.10.3 json5-0.9.8 jupyter-server-1.18.1 jupyterlab-3.4.3 jupyterlab-server-2.15.0 nbclassic-0.4.3 notebook-shim-0.1.0 sniffio-1.2.0
 
-
+------------------------------------------------------------
 Installed jupyter
 pip3 install jupyter
 
 Installing collected packages: wcwidth, Send2Trash, ptyprocess, pickleshare, mistune, ipython-genutils, fastjsonschema, backcall, appnope, traitlets, tinycss2, terminado, soupsieve, pyzmq, pyrsistent, pygments, pycparser, psutil, prompt-toolkit, prometheus-client, pexpect, parso, pandocfilters, nest-asyncio, jupyterlab-widgets, jupyterlab-pygments, importlib-resources, entrypoints, defusedxml, decorator, debugpy, qtpy, matplotlib-inline, jupyter-core, jsonschema, jedi, cffi, beautifulsoup4, nbformat, jupyter-client, ipython, argon2-cffi-bindings, nbclient, ipykernel, argon2-cffi, qtconsole, nbconvert, jupyter-console, notebook, widgetsnbextension, ipywidgets, jupyter
 
 Successfully installed Send2Trash-1.8.0 appnope-0.1.3 argon2-cffi-21.3.0 argon2-cffi-bindings-21.2.0 backcall-0.2.0 beautifulsoup4-4.11.1 cffi-1.15.1 debugpy-1.6.2 decorator-5.1.1 defusedxml-0.7.1 entrypoints-0.4 fastjsonschema-2.15.3 importlib-resources-5.8.0 ipykernel-6.15.1 ipython-7.34.0 ipython-genutils-0.2.0 ipywidgets-7.7.1 jedi-0.18.1 jsonschema-4.7.2 jupyter-1.0.0 jupyter-client-7.3.4 jupyter-console-6.4.4 jupyter-core-4.11.1 jupyterlab-pygments-0.2.2 jupyterlab-widgets-1.1.1 matplotlib-inline-0.1.3 mistune-0.8.4 nbclient-0.6.6 nbconvert-6.5.0 nbformat-5.4.0 nest-asyncio-1.5.5 notebook-6.4.12 pandocfilters-1.5.0 parso-0.8.3 pexpect-4.8.0 pickleshare-0.7.5 prometheus-client-0.14.1 prompt-toolkit-3.0.30 psutil-5.9.1 ptyprocess-0.7.0 pycparser-2.21 pygments-2.12.0 pyrsistent-0.18.1 pyzmq-23.2.0 qtconsole-5.3.1 qtpy-2.1.0 soupsieve-2.3.2.post1 terminado-0.15.0 tinycss2-1.1.1 traitlets-5.3.0 wcwidth-0.2.5 widgetsnbextension-3.6.1
+
+------------------------------------------------------------
+Installed pandas-datareader
+pip3 install pandas-datareader
+
+Installing collected packages: pandas-datareader
+Successfully installed pandas-datareader-0.10.0
 
 
 conda install -c pyviz hvplot geoviews
