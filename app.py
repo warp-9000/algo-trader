@@ -24,7 +24,7 @@ BROKER_COLUMNS = ['Date','TotalCash','TotalValue']
 ORDER_COLUMNS = ['Date','Type','Size','Status']
 POSITION_COLUMNS = ['Date','Position','Price','Cost','Type','Status','Unrealized','Realized']
 
-DEBUG = True
+DEBUG = False
 
 
 
@@ -35,7 +35,9 @@ DEBUG = True
 broker = initialize_df(BROKER_COLUMNS)
 orders = initialize_df(ORDER_COLUMNS)
 positions = initialize_df(POSITION_COLUMNS)
-stocks = load_data('SPY')
+
+# stocks = load_data('QQQ')
+stocks = download_stock_data('QQQ')
 
 # --------------------------------------------------------------------------------------------------
 SPY_COLUMNS = list(stocks.columns)		# <-- saving this for general reference

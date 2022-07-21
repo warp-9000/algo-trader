@@ -9,7 +9,7 @@ from pathlib import Path
 # global variables
 # ==================================================================================================
 
-DEBUG = True
+DEBUG = False
 
 
 
