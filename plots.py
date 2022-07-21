@@ -3,7 +3,7 @@ from plotly.subplots import make_subplots
 
 
 
-def generate_graph(stock_plot_df, trade_plot_df, broke_plot_df):
+def generate_graph(stock_plot_df, trade_plot_df, broke_plot_df, indicator_1_name, indicator_2_name):
 	'''TODO: describe this function
 
 
@@ -38,10 +38,9 @@ def generate_graph(stock_plot_df, trade_plot_df, broke_plot_df):
 	fig.add_trace(
 		go.Scatter(
 			x=stock_plot_df.Date, 
-			# y=stock_plot_df.RollingHigh, 
-			# name="4 Week High",
-			y=stock_plot_df.FastSMA, 
-			name="Fast SMA",
+			y=stock_plot_df.RollingHigh, 
+			# y=stock_plot_df.FastSMA, 
+			name=indicator_1_name,
 			hoverinfo='text+name',
 			line_shape='linear',
 			line=dict(color='rgba(204,204,204,0.95)'),
@@ -55,10 +54,9 @@ def generate_graph(stock_plot_df, trade_plot_df, broke_plot_df):
 	fig.add_trace(
 		go.Scatter(
 			x=stock_plot_df.Date,
-			# y=stock_plot_df.RollingLow,
-			# name="4 Week Low",
-			y=stock_plot_df.SlowSMA,
-			name="Slow SMA",
+			y=stock_plot_df.RollingLow,
+			# y=stock_plot_df.SlowSMA,
+			name=indicator_2_name,
 			hoverinfo='text+name',
 			line_shape='linear',
 			line=dict(color='rgba(204,204,204,0.95)'),

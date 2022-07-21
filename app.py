@@ -24,7 +24,7 @@ BROKER_COLUMNS = ['Date','TotalCash','TotalValue']
 ORDER_COLUMNS = ['Date','Type','Size','Status']
 POSITION_COLUMNS = ['Date','Position','Price','Cost','Type','Status','Unrealized','Realized']
 
-DEBUG = False
+DEBUG = True
 
 
 
@@ -36,8 +36,16 @@ broker = initialize_df(BROKER_COLUMNS)
 orders = initialize_df(ORDER_COLUMNS)
 positions = initialize_df(POSITION_COLUMNS)
 
-# stocks = load_data('QQQ')
-stocks = download_stock_data('QQQ')
+ticker = 'SPY'
+
+# ----
+strategy = 'donchian'			# <----- RollingHigh / Rolling Low
+# strategy = 'dreyfus'			# <----- RollingHigh / Rolling Low
+# ----
+# strategy = 'goldencross'      # <----- FastSMA / SlowSMA
+
+stocks = load_data(ticker)
+# stocks = download_stock_data('QQQ')
 
 # --------------------------------------------------------------------------------------------------
 SPY_COLUMNS = list(stocks.columns)		# <-- saving this for general reference
@@ -83,12 +91,18 @@ broker = initialize_broker(broker, stocks.Date[0], DEFAULT_STARTING_CASH, DEFAUL
 # execute strategy functions
 # ==================================================================================================
 
-# broker, orders, positions, stocks = execute_donchians_strategy(broker, orders, positions, stocks)
+if strategy == 'donchian':
+	broker, orders, positions, stocks = execute_donchians_strategy(broker, orders, positions, stocks, 'RollingHigh', 'RollingLow')
 
-# broker, orders, positions, stocks = execute_dreyfus_strategy(broker, orders, positions, stocks)
+elif strategy == 'dreyfus':
+	broker, orders, positions, stocks = execute_dreyfus_strategy(broker, orders, positions, stocks, 'RollingHigh', 'RollingLow')
 
-broker, orders, positions, stocks = execute_golden_cross_strategy(broker, orders, positions, stocks)
+elif strategy == 'goldencross':
+	broker, orders, positions, stocks = execute_golden_cross_strategy(broker, orders, positions, stocks, 'FastSMA', 'SlowSMA')
 
+else:
+	print(f'Strategy \'{strategy}\' does not exist, misspelled?')
+	assert(f'Strategy \'{strategy}\' is not implemented, please select the correct strategy. :)')
 
 # ==================================================================================================
 # prepare the strategy output for plotting
@@ -109,7 +123,10 @@ broker, orders, positions, stocks = execute_golden_cross_strategy(broker, orders
 # stock_plot_df = stocks[['Date','Open','High','Low','Close','RollingHigh','RollingLow','BuySignal','SellSignal','Volume']]
 
 # isolate the data we want to graph -- USE FOR GOLDEN CROSS --
-stock_plot_df = stocks[['Date','Open','High','Low','Close','FastSMA','SlowSMA','BuySignal','SellSignal','Volume']]
+
+
+# stock_plot_df = stocks[['Date','Open','High','Low','Close','FastSMA','SlowSMA','BuySignal','SellSignal','Volume']]
+stock_plot_df = stocks.copy()
 
 # convert a datetime POSIX 'timestamp' <float> back to a 'datetime' <string>
 stock_plot_df.loc[:,'Date'] = stock_plot_df.Date.apply(lambda x: datetime.fromtimestamp(x))
@@ -154,15 +171,26 @@ print('-------------------------------------------------------------------------
 
 '''TODO: save the results for later review / reuse'''
 
-save_data(stock_plot_df, 'data', 'plot_stock_data.csv')
-save_data(trade_plot_df, 'data', 'plot_trade_data.csv')
-save_data(broke_plot_df, 'data', 'plot_broke_data.csv')
+save_data(stock_plot_df, 'data', ticker+'_'+strategy+'_plot_stock_data.csv')
+save_data(trade_plot_df, 'data', ticker+'_'+strategy+'_plot_trade_data.csv')
+save_data(broke_plot_df, 'data', ticker+'_'+strategy+'_plot_broke_data.csv')
 
 
 # ==================================================================================================
 # plot the results of the strategy
 # ==================================================================================================
 
-generate_graph(stock_plot_df, trade_plot_df, broke_plot_df)
+if strategy == 'donchian':
+	generate_graph(stock_plot_df, trade_plot_df, broke_plot_df, '4 Week High', '4 Week Low')
+
+elif strategy == 'dreyfus':
+	generate_graph(stock_plot_df, trade_plot_df, broke_plot_df, '52 Week High', '52 Week Low')
+
+elif strategy == 'goldencross':
+	generate_graph(stock_plot_df, trade_plot_df, broke_plot_df, 'Fast SMA', 'Slow SMA')
+
+else:
+	print(f'Strategy \'{strategy}\' does not exist, misspelled?')
+	assert(f'Strategy \'{strategy}\' is not implemented, please select the correct strategy. :)')
 
 

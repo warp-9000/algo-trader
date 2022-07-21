@@ -20,14 +20,14 @@ DEBUG = True
 2. check the trading strategy for 'buy' or 'sell' indicators
 """
 
-def execute_donchians_strategy(broker, orders, positions, stocks):
+def execute_donchians_strategy(broker, orders, positions, stocks, indicator_1, indicator_2):
 
 	weekly_rolling_high = 20 # 20 periods is ~4 weeks
 	weekly_rolling_low  = 20 # same as above
 
 	# generate rolling highs and lows
-	stocks['RollingHigh'] = stocks['Close'].rolling(weekly_rolling_high).max()
-	stocks['RollingLow'] = stocks['Close'].rolling(weekly_rolling_low).min()
+	stocks[indicator_1] = stocks['Close'].rolling(weekly_rolling_high).max()
+	stocks[indicator_2] = stocks['Close'].rolling(weekly_rolling_low).min()
 
 	# generate buy / sell signal columns
 	stocks['BuySignal'] = np.NaN
@@ -188,7 +188,7 @@ def execute_donchians_strategy(broker, orders, positions, stocks):
 
 
 
-def execute_dreyfus_strategy(broker, orders, positions, stocks):
+def execute_dreyfus_strategy(broker, orders, positions, stocks, indicator_1, indicator_2):
 
 	weekly_rolling_high = 250 # 250 periods is ~52 weeks
 	weekly_rolling_low  = 250 # same as above
@@ -355,7 +355,7 @@ def execute_dreyfus_strategy(broker, orders, positions, stocks):
 
 
 
-def execute_golden_cross_strategy(broker, orders, positions, stocks):
+def execute_golden_cross_strategy(broker, orders, positions, stocks, indicator_1, indicator_2):
 
 	fast_sma = 20 # 20 periods is ~4 weeks / 1 month
 	slow_sma = 200 # 200 periods is most of the year

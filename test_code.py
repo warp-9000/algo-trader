@@ -1,7 +1,7 @@
 import sys
 import os
 
-IN_ROOT_DIR = True
+IN_ROOT_DIR = False
 
 if not IN_ROOT_DIR:
 	# getting the name of the directory
@@ -20,6 +20,8 @@ if not IN_ROOT_DIR:
 
 from utils import *
 from plots import *
+
+
 
 stock_plot_df = load_data('plot_stock_data')
 trade_plot_df = load_data('plot_trade_data')
