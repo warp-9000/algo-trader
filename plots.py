@@ -1,9 +1,13 @@
 import plotly.graph_objects as go
 from plotly.subplots import make_subplots
 
+import os
+from _config import *
+from strategies import *
 
 
-def generate_graph(stock_plot_df, trade_plot_df, broke_plot_df, indicator_1_name, indicator_2_name):
+def plot_graph(stock_plot_df, trade_plot_df, broke_plot_df, 
+	stock, strategy, indicator_1_name, indicator_2_name, save_results_choice=False):
 	'''TODO: describe this function
 
 
@@ -31,6 +35,9 @@ def generate_graph(stock_plot_df, trade_plot_df, broke_plot_df, indicator_1_name
 		]
 	)
 
+
+
+
 	# ----------------------------------------------------------------------------------------------
 	# plot the stock data over time
 
@@ -38,8 +45,7 @@ def generate_graph(stock_plot_df, trade_plot_df, broke_plot_df, indicator_1_name
 	fig.add_trace(
 		go.Scatter(
 			x=stock_plot_df.Date, 
-			y=stock_plot_df.RollingHigh, 
-			# y=stock_plot_df.FastSMA, 
+			y=stock_plot_df.Indicator_1, 
 			name=indicator_1_name,
 			hoverinfo='text+name',
 			line_shape='linear',
@@ -54,8 +60,7 @@ def generate_graph(stock_plot_df, trade_plot_df, broke_plot_df, indicator_1_name
 	fig.add_trace(
 		go.Scatter(
 			x=stock_plot_df.Date,
-			y=stock_plot_df.RollingLow,
-			# y=stock_plot_df.SlowSMA,
+			y=stock_plot_df.Indicator_2,
 			name=indicator_2_name,
 			hoverinfo='text+name',
 			line_shape='linear',
@@ -66,12 +71,15 @@ def generate_graph(stock_plot_df, trade_plot_df, broke_plot_df, indicator_1_name
 		# secondary_y=True,
 	)
 
+
+
+	# ----------------------------------------------------------------------------------------------
 	# # plot the Close
 	fig.add_trace(
 		go.Scatter(
 			x=stock_plot_df.Date, 
 			y=stock_plot_df.Close, 
-			name="SPY",
+			name=stock,
 			hoverinfo='text+name',
 			line_shape='linear',
 			line=dict(color="#4F4F4F"),
@@ -115,6 +123,8 @@ def generate_graph(stock_plot_df, trade_plot_df, broke_plot_df, indicator_1_name
 		# secondary_y=True,
 	)
 
+
+
 	# plot candlesticks using open-high-low-close
 	# fig.add_trace(
 	# 	go.Candlestick(
@@ -141,6 +151,8 @@ def generate_graph(stock_plot_df, trade_plot_df, broke_plot_df, indicator_1_name
 	# 	# row=3, col=1,
 	# 	secondary_y=False,
 	# )	
+
+
 
 	# ----------------------------------------------------------------------------------------------
 	# plot the trading profit over time
@@ -178,6 +190,8 @@ def generate_graph(stock_plot_df, trade_plot_df, broke_plot_df, indicator_1_name
 		),
 		row=2,col=1
 	)
+
+
 
 	# ----------------------------------------------------------------------------------------------
 	# plot the brokerage values over time
@@ -221,6 +235,9 @@ def generate_graph(stock_plot_df, trade_plot_df, broke_plot_df, indicator_1_name
 	fig.update_xaxes(rangeslider=dict(visible=False))
 	fig.update_yaxes(autorange=True)
 	fig.update_layout(
+		title=stock+" - "+strategy,
+		width=PLOT_WIDTH, 
+		height=PLOT_HEIGHT,
 		yaxis = dict(range=[0,1000000000]),
 		# yaxis2 = dict(range=[0,500]),
 		# hovermode='x',
@@ -231,47 +248,11 @@ def generate_graph(stock_plot_df, trade_plot_df, broke_plot_df, indicator_1_name
 
 	fig.show()
 
+	# save the results as a PNG if wanted
+	if save_results_choice:
+		if not os.path.exists('images'):
+			os.mkdir('images')
+		
+		fig.write_image('images/'+stock+'_'+STRATEGIES[strategy]['name']+'_strat.png')
+
 	return None
-
-(
-# fig = go.Figure(go.Scatter(
-# 	mode="markers", 
-# 	x=namevariants, 
-# 	y=namestems, 
-# 	marker_symbol=symbols,                       
-# 	marker_line_color="midnightblue", 
-# 	marker_color="lightskyblue",
-#     marker_line_width=2,
-# 	marker_size=15,
-# #    hovertemplate="name: %{y}%{x}<br>number: %{marker.symbol}<extra></extra>"
-# ))
-
-# fig = px.scatter(df, x="sepal_width", y="sepal_length", color="species")
-
-# fig.update_traces(marker=dict(size=12,
-#                               line=dict(width=2,
-#                                         color='DarkSlateGrey')),
-#                   selector=dict(mode='markers'))
-
-# fig.add_trace(go.Scatter(x=x, y=y + 10, name="vhv",
-#                     line_shape='vhv'))
-# fig.add_trace(go.Scatter(x=x, y=y + 15, name="hvh",
-#                     line_shape='hvh'))
-# fig.add_trace(go.Scatter(x=x, y=y + 20, name="vh",
-#                     line_shape='vh'))
-# fig.add_trace(go.Scatter(x=x, y=y + 25, name="hv",
-#                     line_shape='hv'))
-
-# fig.update_traces(
-# 	yaxis title,
-# 	xaxis title,
-# 	hoverinfo='text+name',
-# 	mode='lines+markers'
-# )
-
-# fig.update_layout(
-# 	legend=dict(
-# 		y=0.5, traceorder='reversed', font_size=16
-# 	)
-# )
-)

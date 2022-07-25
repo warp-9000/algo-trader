@@ -2,7 +2,9 @@
 TODO: describe the purpose of this file
 """
 
-import pandas as pd
+# import pandas as pd
+import utils as ut
+from _config import *
 
 
 
@@ -10,21 +12,47 @@ import pandas as pd
 # global variables
 # ==================================================================================================
 
-DEBUG = False
+BROKER_COLUMNS = ['Date','TotalCash','TotalValue']
+ORDER_COLUMNS = ['Date','Type','Size','Status']
+POSITION_COLUMNS = ['Date','Position','Price','Cost','Type','Status','Unrealized','Realized']
 
+''' moved to _config.py
+DEBUG = True
+'''
 
 # ==================================================================================================
 # broker functions
 # ==================================================================================================
 
-def initialize_broker(broker, initial_date, cash, value):
+def initialize_broker(initial_date, cash, value):
 
 	if DEBUG:
 		print(f'init broker ---- date: {initial_date}, TotalCash: {cash}, TotalValue: {value}')
 
+	broker = ut.initialize_df(BROKER_COLUMNS)
+	orders = ut.initialize_df(ORDER_COLUMNS)
+	positions = ut.initialize_df(POSITION_COLUMNS)
+
 	broker.loc[len(broker)] = [initial_date, cash, value]
 
-	return broker
+	# ----------------------------------------------------------------------------------------------
+	if DEBUG:
+		print('BROKER')
+		print('BROKER COLUMNS', BROKER_COLUMNS)
+		print(broker.head())
+		print()
+	# ----------------------------------------------------------------------------------------------
+		print('ORDERS')
+		print('ORDER COLUMNS', ORDER_COLUMNS)
+		print(orders.head())
+		print()
+	# ----------------------------------------------------------------------------------------------
+		print('POSITIONS')
+		print('POSITION COLUMNS', POSITION_COLUMNS)
+		print(positions.head())
+		print()
+	
+	return broker, orders, positions
 
 
 # ==================================================================================================
@@ -271,14 +299,8 @@ def process_orders(broker, orders, positions, stocks, stock_idx):
 		# REPLACE ME -- this comment and print() should be a log statement
 		# print the Type of order we're processing
 		if DEBUG:
-			print(f'process order -- orders idx: {idx}, date: {spy_df.Date[stock_idx]}, price: {stocks.Open[stock_idx]}, size: {orders.Size[idx]}, type: {orders.Type[idx]}')
-		
-		# DELETE ME -- we now operate directly on the dataframe instead of passing copies of the dataframe back and forth
-		# execute the current order
-		# positions = execute_order(spy_df,df_i,positions,orders.iloc[i,1],orders.iloc[i,0])
-		# positions = execute_order(spy_df.Date[df_idx], spy_df.Open[df_idx], orders.Size[i], orders.iloc[i,1])
-		# DELETE ME --
-		
+			print(f'process order -- orders idx: {idx}, date: {stocks.Date[stock_idx]}, price: {stocks.Open[stock_idx]}, size: {orders.Size[idx]}, type: {orders.Type[idx]}')
+				
 		broker, positions = execute_order(broker, positions, stocks.Date[stock_idx], stocks.Open[stock_idx], orders.Size[idx], orders.Type[idx])
 		
 		# after we execute the order we then set the current order's status to 'filled'

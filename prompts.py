@@ -1,66 +1,59 @@
-"""
-Welcome to Algo Trader!!
-Are you an existing user
-    Login Credentials
-New user 
-    Create an account
+'''
+This file includes functions for displaying text and prompting the user for answers.
+'''
 
-Would you like to download fresh data or use an existing data?
-1 Download Fresh Data
-2 Use existing data
+'''
+This comment holds brainstorming thoughts about how we might want to build a better command line UI
+
+Do you want to download updated stock data? Yes/No
 
 Download Fresh Data 
     Enter Ticker symbol?
     User will enter the company Ticker Symbol
     
-Use existing data
+Use Existing Data
     Get list of Tickers we want to display
     Which ticker do you want to use? (Select from the list)
 
 Loading data as per the selected ticker
 
 What is your investment risk tolerance?
-Low 
-Moderate 
-High
+    Low 
+    Moderate 
+    High
 
 #We have no idea about how much risk each of thses strategies carry
 
 What type of Algorithm Strategies you want to trade?
-    Donchian's Four Weel Rule 
-    Dreyfus’s 52 Week Rule
-    Turtle Trading
-    Golden Cross” 20v200 SMA
+'''
 
+from _config import *
+import questionary as qt
 
-How much cash do you want to trade?
-Default 100k
+def welcome_message():
 
-How many shares do you want to trade?
-Default 1
+    print()
+    print('Welcome to Algo Strategy Tester')
+    print()
+    print("This application will let you run a pre-defined algorithmic trading strategy on stock data you select. Results are displayed in an interactive graph that you man inspect. Enjoy!")
+    print()
 
-Run Strategies
+    return None
 
-Want to plot the results?
-Yes
-No
+def prompt_multiple_choice(question_text, question_options):
+    '''This function wraps the Questionary .select() function used to prompt the user for an answer.
+    '''
 
-If yes
-Plot Data
+    result = qt.select(
+        question_text,
+        choices = question_options
+    ).ask()
+    print()
 
-If No
-Abort
+    return result
 
+def prompt_single_choice(question_text):
 
-Do you still want to continue
-Yes
-No
+    result = qt.confirm(question_text).ask()
 
-If yes
-Main Menu
-Choose different trading strategy
-
-
-
-
-"""
+    return result

@@ -1,18 +1,43 @@
 import numpy as np
 from broker import *
 
+from _config import *
 
 
 # ==================================================================================================
 # global variables
 # ==================================================================================================
 
+''' moved to _config.py
 DEBUG = True
+'''
+
+STRATEGIES = {
+	"Donchian's Four Weel Rule" : {
+		'name' : 'donchian',
+		'text' : "Donchian's Four Weel Rule",
+		'ind_1' : '4 Week High', 
+		'ind_2' : '4 Week Low',
+	},
+	"Dreyfus's 52 Week Rule" : {
+		'name' : 'dreyfus',
+    	'text' : "Dreyfus's 52 Week Rule",
+		'ind_1' : '52 Week High', 
+		'ind_2' : '52 Week Low',
+	},
+	"Golden Cross 20v200 SMA" : {
+		'name' : 'goldencross',
+    	'text' : "Golden Cross 20v200 SMA",
+		'ind_1' : 'Fast SMA', 
+		'ind_2' : 'Slow SMA',
+	},
+}
+
 
 
 
 # ==================================================================================================
-# execute strategy
+# define one function per strategy
 # ==================================================================================================
 
 """ Iterate through len-1 rows
@@ -20,14 +45,15 @@ DEBUG = True
 2. check the trading strategy for 'buy' or 'sell' indicators
 """
 
-def execute_donchians_strategy(broker, orders, positions, stocks, indicator_1, indicator_2):
+'''    STRATEGY 1    '''
+def execute_donchians_strategy(broker, orders, positions, stocks):
 
 	weekly_rolling_high = 20 # 20 periods is ~4 weeks
 	weekly_rolling_low  = 20 # same as above
 
 	# generate rolling highs and lows
-	stocks[indicator_1] = stocks['Close'].rolling(weekly_rolling_high).max()
-	stocks[indicator_2] = stocks['Close'].rolling(weekly_rolling_low).min()
+	stocks['Indicator_1'] = stocks['Close'].rolling(weekly_rolling_high).max()
+	stocks['Indicator_2'] = stocks['Close'].rolling(weekly_rolling_low).min()
 
 	# generate buy / sell signal columns
 	stocks['BuySignal'] = np.NaN
@@ -56,7 +82,7 @@ def execute_donchians_strategy(broker, orders, positions, stocks, indicator_1, i
 		# REPLACE ME -- this comment and print() should be a log statement
 		# print info about the STOCK_DF that we're processing
 		if DEBUG:
-			print(f'strategy ------- stock idx: {i}, # open positions = {len(open_positions)}, close: {stocks.Close[i]}, rolling low: {stocks.RollingLow[i]}, rolling high: {stocks.RollingHigh[i]}, ')
+			print(f'strategy ------- stock idx: {i}, # open positions = {len(open_positions)}, close: {stocks.Close[i]}, rolling low: {stocks.Indicator_2[i]}, rolling high: {stocks.Indicator_1[i]}, ')
 		
 		# ------------------------------------------------------------------------------------------
 		# Execute our Trading Strategy
@@ -85,24 +111,22 @@ def execute_donchians_strategy(broker, orders, positions, stocks, indicator_1, i
 			# Confirm there's NO prior buy signal, AND
 			# Check if 'Close' has met the 'Rolling High'
 			if (np.isnan(stocks.BuySignal[i-1])) and \
-			(stocks.Close[i]==stocks.RollingHigh[i]) :
+			(stocks.Close[i]==stocks.Indicator_1[i]) :
 				
 				# create a buy order
 				orders = create_order(orders, stocks.Date[i], 'buy')
 				
 				# set Close price -> Buy Signal
-				# 9 = BuySignal
-				stocks.iloc[i,9] = stocks.Close[i]
+				stocks.loc[i,'BuySignal'] = stocks.Close[i]
 			
 			elif (np.isnan(stocks.SellSignal[i-1])) and \
-			(stocks.Close[i]==stocks.RollingLow[i]) :
+			(stocks.Close[i]==stocks.Indicator_2[i]) :
 				
 				# create a sell order
 				orders = create_order(orders, stocks.Date[i], 'sell')
 				
 				# set Close price -> Sell Signal
-				# 10 = SellSignal
-				stocks.iloc[i,10] = stocks.Close[i]
+				stocks.loc[i,'SellSignal'] = stocks.Close[i]
 			
 		
 		# ------------------------------------------------------------------------------------------
@@ -118,7 +142,7 @@ def execute_donchians_strategy(broker, orders, positions, stocks, indicator_1, i
 
 			if (open_positions.Type[pos_idx] is not 'long') and \
 			(np.isnan(stocks.BuySignal[i-1])) and \
-			(stocks.Close[i]==stocks.RollingHigh[i]) :
+			(stocks.Close[i]==stocks.Indicator_1[i]) :
 				
 				# create a close order
 				orders = create_order(orders, stocks.Date[i], 'close')
@@ -127,12 +151,11 @@ def execute_donchians_strategy(broker, orders, positions, stocks, indicator_1, i
 				orders = create_order(orders, stocks.Date[i], 'buy')
 				
 				# set Close price -> Buy Signal
-				# 9 = BuySignal
-				stocks.iloc[i,9] = stocks.Close[i]
+				stocks.loc[i,'BuySignal'] = stocks.Close[i]
 				
 			elif (open_positions.Type[pos_idx] is not 'short') and \
 			(np.isnan(stocks.SellSignal[i-1])) and \
-			(stocks.Close[i]==stocks.RollingLow[i]) :
+			(stocks.Close[i]==stocks.Indicator_2[i]) :
 				
 				# create a close order
 				orders = create_order(orders, stocks.Date[i], 'close')
@@ -141,8 +164,7 @@ def execute_donchians_strategy(broker, orders, positions, stocks, indicator_1, i
 				orders = create_order(orders, stocks.Date[i], 'sell')
 				
 				# set Close price -> Sell Signal
-				# 10 = SellSignal
-				stocks.iloc[i,10] = stocks.Close[i]
+				stocks.loc[i,'SellSignal'] = stocks.Close[i]
 				
 		# ------------------------------------------------------------------------------------------
 		elif (len(open_positions) > 1) :
@@ -154,7 +176,7 @@ def execute_donchians_strategy(broker, orders, positions, stocks, indicator_1, i
 		if (len(positions) > 0) and (positions.iloc[-1].Status=='open'):
 
 			# POSITION_COLUMNS = ['Date','Position','Price','Cost','Type','Status','Unrealized','Realized']
-			# 6 == Unrealized
+			# Unrealized = 6
 			# update the open position's Unrealized(gain)
 			# Unrealized(gain) = Cost - (Position * Closing Price)
 			positions.iloc[-1,6] = positions.iloc[-1].Cost - (abs(positions.iloc[-1].Position) * stocks.iloc[i].Close)
@@ -162,10 +184,9 @@ def execute_donchians_strategy(broker, orders, positions, stocks, indicator_1, i
 			# REPLACE ME -- this comment and print() should be a log statement
 			# print info from BROKER_DF
 			if DEBUG:
-				print(f'strategy ------- update positns - row: {positions.index[-1]}, date: {broker.iloc[-1].Date}, cost: {positions.iloc[-1].Cost}, unrlz: {positions.iloc[-1].Unrealized}, rlizd: {positions.iloc[-1].Realized} ')
+				print(f'strategy ------- update positions - row: {positions.index[-1]}, date: {broker.iloc[-1].Date}, cost: {positions.iloc[-1].Cost}, unrlz: {positions.iloc[-1].Unrealized}, rlizd: {positions.iloc[-1].Realized} ')
 
 			# BROKER_COLUMNS = ['Date','TotalCash','CashValue']
-			# TotalValue = 2
 			# update the brokerage account's total value
 			broker.iloc[-1].TotalValue = broker.iloc[-1].TotalCash + positions.iloc[-1].Cost + positions.iloc[-1].Unrealized
 
@@ -186,16 +207,15 @@ def execute_donchians_strategy(broker, orders, positions, stocks, indicator_1, i
 
 	return broker, orders, positions, stocks
 
-
-
-def execute_dreyfus_strategy(broker, orders, positions, stocks, indicator_1, indicator_2):
+'''    STRATEGY 2    '''
+def execute_dreyfus_strategy(broker, orders, positions, stocks):
 
 	weekly_rolling_high = 250 # 250 periods is ~52 weeks
 	weekly_rolling_low  = 250 # same as above
 
 	# generate rolling highs and lows
-	stocks['RollingHigh'] = stocks['Close'].rolling(weekly_rolling_high).max()
-	stocks['RollingLow'] = stocks['Close'].rolling(weekly_rolling_low).min()
+	stocks['Indicator_1'] = stocks['Close'].rolling(weekly_rolling_high).max()
+	stocks['Indicator_2'] = stocks['Close'].rolling(weekly_rolling_low).min()
 
 	# generate buy / sell signal columns
 	stocks['BuySignal'] = np.NaN
@@ -223,7 +243,7 @@ def execute_dreyfus_strategy(broker, orders, positions, stocks, indicator_1, ind
 		# REPLACE ME -- this comment and print() should be a log statement
 		# print info about the STOCK_DF that we're processing
 		if DEBUG:
-			print(f'strategy ------- stock idx: {i}, # open positions = {len(open_positions)}, close: {stocks.Close[i]}, rolling low: {stocks.RollingLow[i]}, rolling high: {stocks.RollingHigh[i]}, ')
+			print(f'strategy ------- stock idx: {i}, # open positions = {len(open_positions)}, close: {stocks.Close[i]}, rolling low: {stocks.Indicator_2[i]}, rolling high: {stocks.Indicator_1[i]}, ')
 		
 		# ------------------------------------------------------------------------------------------
 		# Execute our Trading Strategy
@@ -252,24 +272,22 @@ def execute_dreyfus_strategy(broker, orders, positions, stocks, indicator_1, ind
 			# Confirm there's NO prior buy signal, AND
 			# Check if 'Close' has met the 'Rolling High'
 			if (np.isnan(stocks.BuySignal[i-1])) and \
-			(stocks.Close[i]==stocks.RollingHigh[i]) :
+			(stocks.Close[i]==stocks.Indicator_1[i]) :
 				
 				# create a buy order
 				orders = create_order(orders, stocks.Date[i], 'buy')
 				
 				# set Close price -> Buy Signal
-				# 9 = BuySignal
-				stocks.iloc[i,9] = stocks.Close[i]
+				stocks.loc[i,'BuySignal'] = stocks.Close[i]
 			
 			elif (np.isnan(stocks.SellSignal[i-1])) and \
-			(stocks.Close[i]==stocks.RollingLow[i]) :
+			(stocks.Close[i]==stocks.Indicator_2[i]) :
 				
 				# create a sell order
 				orders = create_order(orders, stocks.Date[i], 'sell')
 				
 				# set Close price -> Sell Signal
-				# 10 = SellSignal
-				stocks.iloc[i,10] = stocks.Close[i]
+				stocks.loc[i,'SellSignal'] = stocks.Close[i]
 			
 		
 		# ------------------------------------------------------------------------------------------
@@ -285,7 +303,7 @@ def execute_dreyfus_strategy(broker, orders, positions, stocks, indicator_1, ind
 
 			if (open_positions.Type[pos_idx] is not 'long') and \
 			(np.isnan(stocks.BuySignal[i-1])) and \
-			(stocks.Close[i]==stocks.RollingHigh[i]) :
+			(stocks.Close[i]==stocks.Indicator_1[i]) :
 				
 				# create a close order
 				orders = create_order(orders, stocks.Date[i], 'close')
@@ -294,12 +312,11 @@ def execute_dreyfus_strategy(broker, orders, positions, stocks, indicator_1, ind
 				orders = create_order(orders, stocks.Date[i], 'buy')
 				
 				# set Close price -> Buy Signal
-				# 9 = BuySignal
-				stocks.iloc[i,9] = stocks.Close[i]
+				stocks.loc[i,'BuySignal'] = stocks.Close[i]
 				
 			elif (open_positions.Type[pos_idx] is not 'short') and \
 			(np.isnan(stocks.SellSignal[i-1])) and \
-			(stocks.Close[i]==stocks.RollingLow[i]) :
+			(stocks.Close[i]==stocks.Indicator_2[i]) :
 				
 				# create a close order
 				orders = create_order(orders, stocks.Date[i], 'close')
@@ -308,8 +325,7 @@ def execute_dreyfus_strategy(broker, orders, positions, stocks, indicator_1, ind
 				orders = create_order(orders, stocks.Date[i], 'sell')
 				
 				# set Close price -> Sell Signal
-				# 10 = SellSignal
-				stocks.iloc[i,10] = stocks.Close[i]
+				stocks.loc[i,'SellSignal'] = stocks.Close[i]
 				
 		# ------------------------------------------------------------------------------------------
 		elif (len(open_positions) > 1) :
@@ -321,7 +337,7 @@ def execute_dreyfus_strategy(broker, orders, positions, stocks, indicator_1, ind
 		if (len(positions) > 0) and (positions.iloc[-1].Status=='open'):
 
 			# POSITION_COLUMNS = ['Date','Position','Price','Cost','Type','Status','Unrealized','Realized']
-			# 6 == Unrealized
+			# Unrealized = 6
 			# update the open position's Unrealized(gain)
 			# Unrealized(gain) = Cost - (Position * Closing Price)
 			positions.iloc[-1,6] = positions.iloc[-1].Cost - (abs(positions.iloc[-1].Position) * stocks.iloc[i].Close)
@@ -332,7 +348,6 @@ def execute_dreyfus_strategy(broker, orders, positions, stocks, indicator_1, ind
 				print(f'strategy ------- update positns - row: {positions.index[-1]}, date: {broker.iloc[-1].Date}, cost: {positions.iloc[-1].Cost}, unrlz: {positions.iloc[-1].Unrealized}, rlizd: {positions.iloc[-1].Realized} ')
 
 			# BROKER_COLUMNS = ['Date','TotalCash','CashValue']
-			# TotalValue = 2
 			# update the brokerage account's total value
 			broker.iloc[-1].TotalValue = broker.iloc[-1].TotalCash + positions.iloc[-1].Cost + positions.iloc[-1].Unrealized
 
@@ -353,16 +368,15 @@ def execute_dreyfus_strategy(broker, orders, positions, stocks, indicator_1, ind
 
 	return broker, orders, positions, stocks
 
-
-
-def execute_golden_cross_strategy(broker, orders, positions, stocks, indicator_1, indicator_2):
+'''    STRATEGY 3    '''
+def execute_golden_cross_strategy(broker, orders, positions, stocks):
 
 	fast_sma = 20 # 20 periods is ~4 weeks / 1 month
 	slow_sma = 200 # 200 periods is most of the year
 
 	# generate fast and slow SMAs
-	stocks['FastSMA'] = stocks['Close'].rolling(fast_sma).mean()
-	stocks['SlowSMA'] = stocks['Close'].rolling(slow_sma).mean()
+	stocks['Indicator_1'] = stocks['Close'].rolling(fast_sma).mean()
+	stocks['Indicator_2'] = stocks['Close'].rolling(slow_sma).mean()
 
 	# generate buy / sell signal columns
 	stocks['BuySignal'] = np.NaN
@@ -390,7 +404,7 @@ def execute_golden_cross_strategy(broker, orders, positions, stocks, indicator_1
 		# REPLACE ME -- this comment and print() should be a log statement
 		# print info about the STOCK_DF that we're processing
 		if DEBUG:
-			print(f'strategy ------- stock idx: {i}, # open positions = {len(open_positions)}, close: {stocks.Close[i]}, slow sma: {stocks.SlowSMA[i]}, fast sma: {stocks.FastSMA[i]}, ')
+			print(f'strategy ------- stock idx: {i}, # open positions = {len(open_positions)}, close: {stocks.Close[i]}, slow sma: {stocks.Indicator_2[i]}, fast sma: {stocks.Indicator_1[i]}, ')
 		
 		# ------------------------------------------------------------------------------------------
 		# Execute our Trading Strategy
@@ -417,28 +431,26 @@ def execute_golden_cross_strategy(broker, orders, positions, stocks, indicator_1
 		if (len(open_positions) <= 0) :
 			
 			# Confirm there's NO prior BUY signal, AND
-			# Check if 'FastSMA' has crossed 'SlowSMA' to the updside
+			# Check if the Fast SMA (Indicator_1) has crossed Slow SMA (Indicator_2) to the updside
 			if (np.isnan(stocks.BuySignal[i-1])) and \
-			(stocks.FastSMA[i]>=stocks.SlowSMA[i]) :
+			(stocks.Indicator_1[i]>=stocks.Indicator_2[i]) :
 				
 				# create a buy order
 				orders = create_order(orders, stocks.Date[i], 'buy')
 				
 				# set Close price -> Buy Signal
-				# 9 = BuySignal
-				stocks.iloc[i,9] = stocks.Close[i]
+				stocks.loc[i,'BuySignal'] = stocks.Close[i]
 			
 			# Confirm there's NO prior SELL signal, AND
-			# Check if 'FastSMA' has crossed the 'SlowSMA' to the downside
+			# Check if the Fast SMA (Indicator_1) has crossed Slow SMA (Indicator_2) to the downside
 			elif (np.isnan(stocks.SellSignal[i-1])) and \
-			(stocks.FastSMA[i]<=stocks.SlowSMA[i]) :
+			(stocks.Indicator_1[i]<=stocks.Indicator_2[i]) :
 				
 				# create a sell order
 				orders = create_order(orders, stocks.Date[i], 'sell')
 				
 				# set Close price -> Sell Signal
-				# 10 = SellSignal
-				stocks.iloc[i,10] = stocks.Close[i]
+				stocks.loc[i,'SellSignal'] = stocks.Close[i]
 			
 		
 		# ------------------------------------------------------------------------------------------
@@ -450,10 +462,10 @@ def execute_golden_cross_strategy(broker, orders, positions, stocks, indicator_1
 
 			# Confirm the current open position is SHORT, AND
 			# that there's NO recent BUY signal, AND
-			# that the 'FastSMA' has crossed 'SlowSMA' to the updside
+			# that Fast SMA (Indicator_1) has crossed Slow SMA (Indicator_2) to the updside
 			if (open_positions.Type[pos_idx] is not 'long') and \
 			(np.isnan(stocks.BuySignal[i-1])) and \
-			(stocks.FastSMA[i]>=stocks.SlowSMA[i]) :
+			(stocks.Indicator_1[i]>=stocks.Indicator_2[i]) :
 				
 				# create a close order
 				orders = create_order(orders, stocks.Date[i], 'close')
@@ -462,15 +474,14 @@ def execute_golden_cross_strategy(broker, orders, positions, stocks, indicator_1
 				orders = create_order(orders, stocks.Date[i], 'buy')
 				
 				# set Close price -> Buy Signal
-				# 9 = BuySignal
-				stocks.iloc[i,9] = stocks.Close[i]
+				stocks.loc[i,'BuySignal'] = stocks.Close[i]
 				
 			# Confirm the current open position is LONG, AND
 			# that there's NO recent SELL signal, AND
-			# that the 'FastSMA' has crossed 'SlowSMA' to the downside
+			# that Fast SMA (Indicator_1) has crossed Slow SMA (Indicator_2) to the downside
 			elif (open_positions.Type[pos_idx] is not 'short') and \
 			(np.isnan(stocks.SellSignal[i-1])) and \
-			(stocks.FastSMA[i]<=stocks.SlowSMA[i]) :
+			(stocks.Indicator_1[i]<=stocks.Indicator_2[i]) :
 				
 				# create a close order
 				orders = create_order(orders, stocks.Date[i], 'close')
@@ -479,8 +490,7 @@ def execute_golden_cross_strategy(broker, orders, positions, stocks, indicator_1
 				orders = create_order(orders, stocks.Date[i], 'sell')
 				
 				# set Close price -> Sell Signal
-				# 10 = SellSignal
-				stocks.iloc[i,10] = stocks.Close[i]
+				stocks.loc[i,'SellSignal'] = stocks.Close[i]
 				
 		# ------------------------------------------------------------------------------------------
 		elif (len(open_positions) > 1) :
@@ -492,7 +502,7 @@ def execute_golden_cross_strategy(broker, orders, positions, stocks, indicator_1
 		if (len(positions) > 0) and (positions.iloc[-1].Status=='open'):
 
 			# POSITION_COLUMNS = ['Date','Position','Price','Cost','Type','Status','Unrealized','Realized']
-			# 6 == Unrealized
+			# Unrealized = 6
 			# update the open position's Unrealized(gain)
 			# Unrealized(gain) = Cost - (Position * Closing Price)
 			positions.iloc[-1,6] = positions.iloc[-1].Cost - (abs(positions.iloc[-1].Position) * stocks.iloc[i].Close)
