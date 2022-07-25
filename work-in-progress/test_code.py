@@ -40,4 +40,4 @@ stock_plot_df = load_data(ticker+'_'+strategy+'_'+'plot_stock_data')
 trade_plot_df = load_data(ticker+'_'+strategy+'_'+'plot_trade_data')
 broke_plot_df = load_data(ticker+'_'+strategy+'_'+'plot_broke_data')
 
-generate_graph(stock_plot_df, trade_plot_df, broke_plot_df)
+plot_graph(stock_plot_df, trade_plot_df, broke_plot_df)
