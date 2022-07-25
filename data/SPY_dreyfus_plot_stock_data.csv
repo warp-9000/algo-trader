@@ -1,4 +1,4 @@
-,Date,Open,High,Low,Close,Adj Close,Volume,RollingHigh,RollingLow,BuySignal,SellSignal
+,Date,Open,High,Low,Close,Adj Close,Volume,Indicator_1,Indicator_2,BuySignal,SellSignal
 0,2000-01-03,148.25,148.25,143.875,145.4375,96.139763,8164300,,,,
 1,2000-01-04,143.53125,144.0625,139.640625,139.75,92.380104,8089800,,,,
 2,2000-01-05,139.9375,141.53125,137.25,140.0,92.54541,12177900,,,,
