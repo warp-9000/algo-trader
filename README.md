@@ -1,82 +1,91 @@
-**Building an Algorithmic Trader
-Project Approach:
+# Algo Strategy Tester
 
-**Goals and Objectives:**
+This application lets you run three pre-defined algorithmic trading strategies on stock data you select. Results are displayed in an interactive graph that you can use to inspect the results. Resulting data and still images of the graphs may be saved if wanted. Enjoy!
 
-      - Learn about successful Trend Trading Methodologies
-      - Research Sector Exchange Trading Funds (ETFs)
-      - Research and download varying APIs
-      - Writing Python code using Jupyterlab, Pandas, yfinance and Plotly
-      - Test code against data to determine which methodologies are the most successful historically
-      - Finally, to create the basic structure for and algorithmic trader
+## Project Goals and Objectives:
 
-**Strategies Used for Testing:**
+- Learn about successful Trend Trading methodologies
+- Research and use new APIs for accessing data plotting data
+- Implement an application framework in Python to simulate the results of our trading algorithms
+- Test our application against various stock data to determine how our algorithms perform historically against the overall market or specific stocks
+- Finally, create the basic structure for what an algorithmic trading application could look like
 
-- Tested against the SPY
-- Potential to test strategies against anything with the ticker symbol
-1. Individual stocks
-2. Sector ETFs
-- Investigated what we can test these strategies against
-- Potential to test against different sectors
+---
 
+## Strategies Used for Testing:
 
-**Data Collection and Cleaning:**
-Data collection involves various CSV files from various sources:
+We implemented the following three algorithmic trading strategies:
 
-- Pandas data reader library
-- Yahoo finance
-- Investigated the alpaca market. Didn't use it due to historical data restrictions(3-5 years only)
-- Downloaded stock data which were already cleaned
-- Additional data was generated and cleaned
-
-
-**Successful Trading Strategies:**
-
+### Donchian's 4 Week Rule 
 
 ![Donchian](https://user-images.githubusercontent.com/105619339/180354817-8f77e71b-7196-452e-8415-ec411196089d.png)
 
+### Dreyfus' 52 Week Rule
+
 ![Dreyfus](https://user-images.githubusercontent.com/105619339/180354826-7c7a9ad9-cdbf-4c1f-933f-b71c39b8c00f.png)
+
+### 20v200 SMA Golden Cross 
+
 ![Golden Cross](https://user-images.githubusercontent.com/105619339/180354831-1f51f710-d167-4ed9-8317-f22083befcc0.png)
 
+---
 
-**APIs We Used:**
+## Technologies
 
-- Plotly: Used Plotly to implement a visual representation of the output of our strategies.
-- yfinance: This library let us download the historical data from [https://finance.yahoo.com/](url).
-- pandas_datareader(pdr): We discovered this library later and replaced the yfinance API. Pdr can be used to download historic stock data from many different services/APIs.
+The following libraries / tools are required our code
+```text
+- anaconda
+- python 3.7
+- pandas-datareader=0.10.0
+- plotly==5.9.0
+- kaleido==0.2.1
+- questionary==1.10.0
+- requests==2.28.1
+```
 
-**APIs We Almost Used:**
+Please create a conda environment using Python 3.7 (ex: "`conda create -n algo python=3.7`")
 
-- Alpaca: Initially tried downloading data from Alpaca; abandoned because historic stock data is resricted to ~ 4 years.
-- Backtrader: A feature-rich Python framework for back testing and trading; can be used to write reusable trading strategies, indicators and analyzers. Abandoned because the framework uses object-oriented programing (aka classes). Was difficult to implement some trading strategies. 
-- backtesting.py: Similar to backtrader; required further investigation.
+---
 
+## Installation Guide
 
-**Data Collection:**
+You have a few options to install this application on your computer, two popular options are:
+1. Download a ZIP of this repositories files [here](https://github.com/warp-9000/algo-trader/archive/refs/heads/main.zip).
+2. [Fork this public respository](https://docs.github.com/en/get-started/quickstart/fork-a-repo "Fork a Repo - GitHub Docs") to your github account.
 
-1. Data Collection
-Historic stock data is quite prevalent; the most difficult choice is where to store the data. We started with Alpaca, and then settled on yfinance and later pandas_datareader for ease-of-use of their APIs. Settled on pandas_datareader for the future ability to download data from sources other than Yahoo Finance.
+After forking this repository you can...
+1. Download a ZIP of your repositories files, or
+2. Use "`git clone your-username@domain.com:your-git-username/algo-trader.git`" to download a copy of the forked respository to your computer.
 
-2. Data Cleaning
-Historic stock data is pretty clean to begin with. The biggest thing to watch out for are differently spelled column names, and their order. Difficult was mostly avoided by downloading data from a single source.
+Forking has the added benefit of easily allowing you to keep your application files up-to-date should any changes or improvements be made in the future.
 
+---
 
-**Application Framework:**
+## Usage
 
-app.py
-- Holds all important staements, initializes core variables, and runs the program from start to finish (plotting a graph).
+***Please note:*** *these usage instructions assume you have installed Python 3.7 and setup an environment where the libraries and frameworks listed in [Technologies](##Technologies) are installed.*
 
-broker.py
-- Initializes a simple broker; has create_orders(), process_orders(), and execute_orders() functions.
-- The execute_orders() funtion supports Buy, Sell and Close order types.
-- Stores all Oders and Position data generated for later use when plotting the results.
+1. Navigate to the root folder of your repository.
+2. Run the application by typing "`python app.py`" and pressing *ENTER*.
+3. Respond to the prompts as shown.
 
-strategies.py
-- Holds a function for each strategy we created.
-- Each strategy executes appropriate broker functions at the appropriate time.
+An example of the application running:
+<p align="center">
+    <img src="https://github.com/warp-9000/algo-trader/blob/main/images/algo-trader-app-usage.gif?raw=true" alt="python app.py in terminal" width="55%"/>
+</p>
 
-utils.py
-- A set of helper functions for downloading, loading and saving stock data.
+---
 
-plots.py
-- Plots the output of the strategy and stock data selected.
+## Contributors
+
+Thanks!
+
+<a href="https://github.com/Warp-9000/algo-trader/graphs/contributors">
+  <img src="https://contrib.rocks/image?repo=warp-9000/algo-trader" />
+</a>
+
+---
+
+## License
+
+This project is currently licensed under GNU GPLv3. Please see the LICENSE file [here](https://github.com/warp-9000/algo-trader/blob/main/LICENSE).
