@@ -55,5 +55,6 @@ def prompt_multiple_choice(question_text, question_options):
 def prompt_single_choice(question_text):
 
     result = qt.confirm(question_text).ask()
+    print()
 
     return result
